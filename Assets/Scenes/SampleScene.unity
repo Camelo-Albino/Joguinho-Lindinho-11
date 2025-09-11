@@ -464,7 +464,7 @@ MonoBehaviour:
   - {fileID: 2494659353351179019, guid: 5f013ad8c17875e44a4a97cbb08223fa, type: 3}
   - {fileID: 7494149679032383838, guid: 0e4216daa73476b4898f20a6d073a669, type: 3}
   - {fileID: 595893355159106674, guid: 44edae465443f8745bc4fb136e48629a, type: 3}
-  numberOfFeinhos: 20
+  numberOfFeinhos: 200
 --- !u!4 &811873966
 Transform:
   m_ObjectHideFlags: 0

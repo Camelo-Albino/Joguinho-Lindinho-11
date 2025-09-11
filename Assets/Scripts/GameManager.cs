@@ -7,7 +7,7 @@ public class GameManager : MonoBehaviour
     public List<GameObject> feinhos;
     public int numberOfFeinhos;
 
-    List<GameObject> allFeinhos;
+    List<GameObject> allFeinhos = new List<GameObject>();
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -17,7 +17,8 @@ public class GameManager : MonoBehaviour
             float y = Random.Range(0, 5);
             Vector3 pos = new Vector3(x, y, 0f);
             int fei = Random.Range(0, feinhos.Count);
-            Instantiate(feinhos[fei], pos, Quaternion.identity); 
+            GameObject a = Instantiate(feinhos[fei], pos, Quaternion.identity);
+            allFeinhos.Add(a);
         }
 
 
@@ -26,6 +27,9 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        foreach (GameObject feinho in allFeinhos)
+        {
+            feinho.transform.Rotate(Vector3.forward * Time.deltaTime * 30f);
+        }
     }
 }
