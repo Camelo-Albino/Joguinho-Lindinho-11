@@ -2,49 +2,75 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    #region Configurações Serializadas
+    #region Configuraï¿½ï¿½es Serializadas
 
     [Header("Movement Settings")]
-    [SerializeField] private float maxForwardSpeed = 10f;       //Velocidade máxima para frente
-    [SerializeField] private float acceleration = 5f;           //Taxa de aceleração
-    [SerializeField] private float deceleration = 2f;           //Taxa de desaceleração
-    [SerializeField] private float backwardSpeedRatio = 0.5f;   //50% da velocidade máxima para trás
+    [SerializeField] private float maxForwardSpeed = 10f;       //Velocidade mï¿½xima para frente
+    [SerializeField] private float acceleration = 5f;           //Taxa de aceleraï¿½ï¿½o
+    [SerializeField] private float deceleration = 2f;           //Taxa de desaceleraï¿½ï¿½o
+    [SerializeField] private float backwardSpeedRatio = 0.5f;   //50% da velocidade mï¿½xima para trï¿½s
     
     [Header("Rotation Settings")]
-    [SerializeField] private float rotationSpeed = 180f;        //Velocidade de rotação em graus por segundo
+    [SerializeField] private float rotationSpeed = 180f;        //Velocidade de rotaï¿½ï¿½o em graus por segundo
 
     [Header("Shooting Settings")]
-    [SerializeField] private GameObject bulletPrefab;          //Prefab do projétil
+    [SerializeField] private GameObject bulletPrefab;          //Prefab do projï¿½til
     [SerializeField] private Transform muzzle;                 //Ponto de origem dos tiros
-    [SerializeField] private float bulletSpeed = 15f;          //Velocidade dos projéteis
+    [SerializeField] private float bulletSpeed = 15f;          //Velocidade dos projï¿½teis
     [SerializeField] private float fireRate = 0.3f;            //Intervalo entre tiros
 
     #endregion
 
-    #region Variáveis Privadas
+    #region Variï¿½veis Privadas
 
     //Componentes e controle de movimento
-    private Rigidbody2D rb;                                     //Referência ao componente Rigidbody2D
+    private Rigidbody2D rb;                                     //Referï¿½ncia ao componente Rigidbody2D
     private Vector2 currentVelocity;                            //Velocidade atual do jogador
-    private float lastFireTime;                                 //Timestamp do último tiros
-    private float maxBackwardSpeed;                             //Velocidade máxima calculada para trás
+    private float lastFireTime;                                 //Timestamp do ï¿½ltimo tiros
+    private float maxBackwardSpeed;                             //Velocidade mï¿½xima calculada para trï¿½s
 
-    //Variáveis para o sistema de wraparound (teleporte pelas bordas)
-    private Camera mainCamera;                                  //referência à câmera principal
+    //Variï¿½veis para o sistema de wraparound (teleporte pelas bordas)
+    private Camera mainCamera;                                  //referï¿½ncia ï¿½ cï¿½mera principal
     private float acreenLeft, screenRight;                      //Limites horizontais da tela
     private float screenTop, screenBotton;                      //Limites verticais da tela
-    private float playerWidth, playerHeight;                    //Dimensões do jogador
+    private float playerWidth, playerHeight;                    //Dimensï¿½es do jogador
 
     #endregion
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
+    #region Mï¿½todos Unity (lifecycle)
+    
     void Start()
     {
-        
+        //Verificar se o RigidBody2D existe, se nï¿½o, adicionar um automaticamente
+        rb = GetComponent<Rigidbody2D>();
+        if (rb == null)
+        {
+            rb = gameObject.AddComponent<Rigidbody2D>();
+            Debug.Log("Rigidbody2D adicionado automaticamente ao player");
+        }
+
+        //Calcular velocidade mï¿½xima para trï¿½s baseada na porporï¿½ï¿½o configurada
+        maxBackwardSpeed = maxForwardSpeed * backwardSpeedRatio;
+
+        //Configurar o RigidBody2D para movimento especial realista
+        rb.linearDamping = 0.5f;                                         //Pequeno arrasto para simular resistï¿½ncia espacial
+        rb.angularDamping = 5f;                                    //Arratso angular para estabilizar rotaï¿½ï¿½o
+        rb.gravityScale = 0f;                                   //Desabilitar gravidade para jogo espacial
+
+        //Inicializar sistema de wraparound (Teleporte pelas bordas)
+        SetupScreenBounds();
     }
 
-    // Update is called once per frame
     void Update()
     {
-        
+        HandleInput();
     }
+
+    //Atualizaï¿½ï¿½o de fï¿½sica - aplica movimento e verifica wraparound
+    void FixedUpdate()
+    {
+        ApplyMovement();                                        //Aplica velocidade ao Rigidbody2D
+        CheckScreenWrap();                                      //Verifica se precisa teleportar pelas bordas
+    }
+    #endregion
 }
