@@ -39,6 +39,7 @@ public class Player : MonoBehaviour
 
     #region M�todos Unity (lifecycle)
     
+    //Inicialização do jogador - configuração de componente e sistema de wraparound
     void Start()
     {
         //Verificar se o RigidBody2D existe, se n�o, adicionar um automaticamente
@@ -72,5 +73,85 @@ public class Player : MonoBehaviour
         ApplyMovement();                                        //Aplica velocidade ao Rigidbody2D
         CheckScreenWrap();                                      //Verifica se precisa teleportar pelas bordas
     }
+
     #endregion
+
+    #region Sistema de Input
+
+    //Processa toda a entrada do usuário (Movimento, rotação, tiro)
+    private void HandleInput()
+    {
+        //Processar entrada de movimento (frente/trás)
+        HandleMovementInput();
+
+        //Processar entrada de rotação (esquerda/direita)
+        HandleRotationInput();
+
+        //Processar entrada de tiro (espaço)
+        HandleShootingInput();
+    }
+    
+    //Processa a entrada de movimento
+    //Inclui tratamento de erro para compatibilidade com Input System
+    private void HandleMovementInput()
+    {
+        bool accelerating = false; //Se está acelerando para frente
+        bool decelerating = false; // Se está acelerando para trás
+        
+        //Usar o input.inputString ou verificar se o input system está ativo
+        try
+        {
+            //Verificar teclas de aceleração (frente)
+            accelerating = Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W);
+            //Verificar teclas de desaceleração (trás)
+            decelerating = Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S);
+        }
+        catch(System.InvalidOperationException)
+        {
+            //Fallback para quando o Input System não está configurado corretamente
+            Debug.LogWarning("Configura essa merda certo");
+            return;
+        }
+
+        //Aplicar movimento baseado na entrada
+        if (accelerating)
+        {
+            AccelerateForward();                                 //Acelerar para frente
+        }
+        else if (decelerating)
+        {
+            AccelerateBackward();                               //Acelerar para trás
+        }
+        else
+        {
+            ApplyDeceleration();                                //Aplicar desaceleração natural
+        }
+    }
+
+    //Processa entrada de rotação
+    //Inclui tratamento de erro para compatibilidade de Input
+    private void HandleRotationInput()
+    {
+        float rotationInput = 0f;                               //Valor de entrada de rotação(-1 a 1)
+
+        try
+        {
+            //Verificar rotação anti-horária (esquerda)
+            if(Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
+            {
+                rotationInput = 1f; //Rotação anti-horária
+            }
+            //Verificar rotação horária (direita)
+            else if(Input.GetKey(KeyCode.rightArrow) || Input.GetKey(KeyCode.D))
+            {
+                rotationInput = -1f; //Rotação horária
+            }
+        }
+        catch(System.InvalidOperationException)
+        {
+            //Fallback para quando o Input System não está configurado corretamente
+            Debug.LogWarning("Configura essa merda certo");
+            return;
+        }
+    }
 }
