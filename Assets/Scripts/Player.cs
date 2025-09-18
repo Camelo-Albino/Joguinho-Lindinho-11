@@ -153,5 +153,11 @@ public class Player : MonoBehaviour
             Debug.LogWarning("Configura essa merda certo");
             return;
         }
+
+        //Aplicar rotação se há entrada
+        if (rotationInput !- 0f)
+        {
+            RotatePlayer(rotationInput);
+        }
     }
 }
